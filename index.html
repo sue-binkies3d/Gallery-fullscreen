@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fullscreen Prototype</title>
+     <title>iPhone 13 - Premium Store</title>
+     <link rel="stylesheet" href="style.css" />
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  </head>
+  <body>
+    <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <nav class="nav">
+        <div class="nav-left">
+          <h1 class="logo">STORE</h1>
+          <ul class="nav-links">
+            <li><a href="#" class="nav-link">Products</a></li>
+            <li><a href="#" class="nav-link">Categories</a></li>
+            <li><a href="#" class="nav-link">About</a></li>
+          </ul>
+        </div>
+        <div class="nav-right">
+          <button class="icon-btn">
+            <i class="far fa-heart"></i>
+          </button>
+          <button class="icon-btn">
+            <i class="fas fa-shopping-cart"></i>
+          </button>
+          <div class="profile-avatar">
+            <img src="https://placehold.co/32x32/4285f4/ffffff?text=U" alt="User profile avatar" />
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <div class="container">
+        <div class="product-layout">
+           <!-- Product Images -->
+           <div class="product-images">
+             <div class="main-image-container">
+               <!-- 3D Model Container -->
+               <div id="model-container" class="model-container">
+                 <div id="model-loader" class="model-loader">
+                   <i class="fas fa-spinner fa-spin"></i>
+                   <p>Loading 3D Model...</p>
+                 </div>
+                 <!-- Interaction Hint -->
+                 <div id="interaction-hint" class="interaction-hint">
+                   <div class="hint-icon">
+                     <img src="./assets/drag to rotate.svg" alt="Drag to rotate" width="24" height="24" />
+                   </div>
+                   <div class="hint-text">Drag to rotate</div>
+                 </div>
+                 <!-- Zoom Hint -->
+                 <div id="zoom-hint" class="interaction-hint">
+                   <div class="hint-icon">
+                     <img src="./assets/zoom out.svg" alt="Pinch to zoom" width="24" height="24" />
+                   </div>
+                   <div class="hint-text">Pinch to zoom</div>
+                 </div>
+               </div>
+               <!-- Fallback Image -->
+               <img id="main-image" src="https://placehold.co/500x500/e5e5e5/333333?text=Premium+Wireless+Headphones" alt="Premium Wireless Headphones Pro - Black" class="main-image fallback-image" style="display: none;" />
+               <button class="zoom-btn">
+                 <i class="fas fa-expand"></i>
+               </button>
+              <div class="image-controls">
+                <button class="control-btn" id="prev-btn">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="control-btn" id="next-btn">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+                <button class="control-btn">
+                  <i class="fas fa-chevron-up"></i>
+                </button>
+                <button class="control-btn">
+                  <i class="fas fa-chevron-down"></i>
+                </button>
+                <button class="control-btn">
+                  <i class="fas fa-search-plus"></i>
+                </button>
+                <button class="control-btn">
+                  <i class="fas fa-search-minus"></i>
+                </button>
+                <button class="control-btn">
+                  <i class="far fa-copy"></i>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Thumbnail Gallery -->
+            <div class="thumbnail-gallery">
+              <button class="gallery-nav prev-thumb">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <div class="thumbnails">
+                <div class="thumbnail active">
+                  <img src="https://placehold.co/80x80/333333/ffffff?text=1" alt="Headphones view 1" />
+                </div>
+                <div class="thumbnail">
+                  <img src="https://placehold.co/80x80/666666/ffffff?text=2" alt="Headphones view 2" />
+                </div>
+                <div class="thumbnail video-thumb">
+                  <img src="https://placehold.co/80x80/999999/ffffff?text=▶" alt="Product video" />
+                  <div class="play-icon">
+                    <i class="fas fa-play"></i>
+                  </div>
+                </div>
+                <div class="thumbnail">
+                  <img src="https://placehold.co/80x80/4285f4/ffffff?text=4" alt="Headphones view 4" />
+                </div>
+                <div class="thumbnail">
+                  <img src="https://placehold.co/80x80/333333/ffffff?text=5" alt="Headphones view 5" />
+                </div>
+              </div>
+              <button class="gallery-nav next-thumb">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Product Details -->
+          <div class="product-details">
+             <div class="product-status">
+               <span class="stock-badge">In Stock</span>
+               <span class="sku">SKU: IP13-2024-128GB</span>
+             </div>
+
+             <h1 class="product-title">iPhone 13 128GB</h1>
+
+            <div class="rating">
+              <div class="stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <span class="review-count">(127 reviews)</span>
+            </div>
+
+             <div class="pricing">
+               <span class="current-price">$799.99</span>
+               <span class="original-price">$899.99</span>
+               <span class="discount-badge">11% OFF</span>
+             </div>
+
+            <p class="shipping-info">Free shipping on orders over $50</p>
+
+             <!-- Color Selection -->
+             <div class="option-group">
+               <label class="option-label">Color</label>
+               <div class="color-options">
+                 <button class="color-option active" data-color="black">
+                   <span class="color-circle black"></span>
+                   <i class="fas fa-check"></i>
+                 </button>
+                 <button class="color-option" data-color="white">
+                   <span class="color-circle white"></span>
+                 </button>
+                 <button class="color-option" data-color="blue">
+                   <span class="color-circle blue"></span>
+                 </button>
+                 <button class="color-option" data-color="red">
+                   <span class="color-circle red"></span>
+                 </button>
+               </div>
+             </div>
+
+             <!-- Storage Selection -->
+             <div class="option-group">
+               <label class="option-label">Storage</label>
+               <div class="size-options">
+                 <button class="size-option active">128GB</button>
+                 <button class="size-option">256GB</button>
+                 <button class="size-option">512GB</button>
+               </div>
+             </div>
+
+            <!-- Quantity -->
+            <div class="option-group">
+              <label class="option-label">Quantity</label>
+              <div class="quantity-selector">
+                <button class="qty-btn minus">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <input type="number" class="qty-input" value="1" min="1" max="10" />
+                <button class="qty-btn plus">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+              <button class="add-to-cart-btn">Add to Cart</button>
+              <button class="wishlist-btn">
+                <i class="far fa-heart"></i>
+              </button>
+            </div>
+
+             <!-- Key Features -->
+             <div class="key-features">
+               <h3 class="features-title">Key Features</h3>
+               <ul class="features-list">
+                 <li class="feature-item">
+                   <i class="fas fa-check"></i>
+                   <span>A15 Bionic chip with 6-core CPU</span>
+                 </li>
+                 <li class="feature-item">
+                   <i class="fas fa-check"></i>
+                   <span>Dual-camera system with Night mode</span>
+                 </li>
+                 <li class="feature-item">
+                   <i class="fas fa-check"></i>
+                   <span>All-day battery life</span>
+                 </li>
+                 <li class="feature-item">
+                   <i class="fas fa-check"></i>
+                   <span>5G connectivity</span>
+                 </li>
+                 <li class="feature-item">
+                   <i class="fas fa-check"></i>
+                   <span>Ceramic Shield front cover</span>
+                 </li>
+               </ul>
+             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
