@@ -182,7 +182,7 @@ body {
 /* Interaction Hint */
 .interaction-hint {
   position: absolute;
-  top: 85%;
+  top: 80%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: black;
@@ -199,6 +199,10 @@ body {
 .interaction-hint.show {
   display: flex;
   animation: hintFadeIn 0.5s ease-out;
+}
+
+.tap-icon {
+  color: black;
 }
 
 .hint-icon {
@@ -306,7 +310,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
+  font-size: 1rem;
   color: #666666;
   transition: all 0.2s ease;
 }
@@ -816,7 +820,7 @@ button:focus,
   .control-btn {
     width: 28px;
     height: 28px;
-    font-size: 0.7rem;
+    font-size: 1rem;
   }
 
   .features-list {
@@ -863,4 +867,23 @@ button:focus,
   background: linear-gradient(45deg, #00b894, #00a085);
   font-size: 1.3rem;
   padding: 20px 40px;
+}
+
+@keyframes pulsate {
+  0% {
+    transform: scale(1);
+    color: #666666;
+  }
+  50% {
+    transform: scale(1.2);
+    color: #4285f4;
+  }
+  100% {
+    transform: scale(1);
+    color: #666666;
+  }
+}
+
+.highlight-icon {
+  animation: pulsate 1.5s ease-in-out infinite;
 }

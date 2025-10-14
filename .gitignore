@@ -1,0 +1,5 @@
+# Ignore the file with our secret key
+.env
+
+# Ignore all the library code we installed
+node_modules

@@ -7,6 +7,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const interactionHint = document.getElementById("interaction-hint");
   const zoomHint = document.getElementById("zoom-hint");
   const fallbackImage = document.getElementById("main-image");
+  const prevBtn = document.getElementById("prev-btn");
+  const nextBtn = document.getElementById("next-btn");
+  const zoomInBtn = document.querySelector(".fa-search-plus").parentElement;
+  const zoomOutBtn = document.querySelector(".fa-search-minus").parentElement;
+  const chevronUpBtn = document.querySelector(".fa-chevron-up").parentElement;
+  const chevronDownBtn = document.querySelector(".fa-chevron-down").parentElement;
 
   // Animation state
   let isDemoMode = false;
@@ -79,6 +85,18 @@ document.addEventListener("DOMContentLoaded", function () {
           zoomHint.style.display = "none";
         }
 
+        // Remove all highlights
+        if (prevBtn && nextBtn && chevronUpBtn && chevronDownBtn) {
+          prevBtn.classList.remove("highlight-icon");
+          nextBtn.classList.remove("highlight-icon");
+          chevronUpBtn.classList.remove("highlight-icon");
+          chevronDownBtn.classList.remove("highlight-icon");
+        }
+        if (zoomInBtn && zoomOutBtn) {
+          zoomInBtn.classList.remove("highlight-icon");
+          zoomOutBtn.classList.remove("highlight-icon");
+        }
+
         // Return to initial positions immediately when user interacts
         if (model) {
           model.rotation.y = initialRotation;
@@ -107,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Scale and position the iPhone model appropriately
         model.scale.set(15, 15, 15); // Much larger scale for better visibility
-        model.position.set(0, -0.3, 0);
+        model.position.set(0, -0.1, 0);
 
         // Add the model to the scene
         scene.add(model);
@@ -398,6 +416,13 @@ document.addEventListener("DOMContentLoaded", function () {
       // Step 2: Show drag hint and start rotation
       if (interactionHint) {
         interactionHint.classList.add("show");
+        // Highlight chevron icons
+        if (prevBtn && nextBtn && chevronUpBtn && chevronDownBtn) {
+          prevBtn.classList.add("highlight-icon");
+          nextBtn.classList.add("highlight-icon");
+          chevronUpBtn.classList.add("highlight-icon");
+          chevronDownBtn.classList.add("highlight-icon");
+        }
       }
 
       isDemoMode = true;
@@ -408,11 +433,23 @@ document.addEventListener("DOMContentLoaded", function () {
         if (interactionHint) {
           interactionHint.classList.remove("show");
           interactionHint.style.display = "none";
+          // Remove highlight from chevron icons
+          if (prevBtn && nextBtn && chevronUpBtn && chevronDownBtn) {
+            prevBtn.classList.remove("highlight-icon");
+            nextBtn.classList.remove("highlight-icon");
+            chevronUpBtn.classList.remove("highlight-icon");
+            chevronDownBtn.classList.remove("highlight-icon");
+          }
         }
 
         // Show zoom hint and start zoom demo
         if (zoomHint) {
           zoomHint.classList.add("show");
+          // Highlight zoom icons
+          if (zoomInBtn && zoomOutBtn) {
+            zoomInBtn.classList.add("highlight-icon");
+            zoomOutBtn.classList.add("highlight-icon");
+          }
         }
 
         isDemoMode = false;
@@ -424,6 +461,11 @@ document.addEventListener("DOMContentLoaded", function () {
           if (zoomHint) {
             zoomHint.classList.remove("show");
             zoomHint.style.display = "none";
+            // Remove highlight from zoom icons
+            if (zoomInBtn && zoomOutBtn) {
+              zoomInBtn.classList.remove("highlight-icon");
+              zoomOutBtn.classList.remove("highlight-icon");
+            }
           }
 
           isZoomDemo = false;
