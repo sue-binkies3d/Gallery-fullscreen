@@ -530,10 +530,24 @@ document.addEventListener("DOMContentLoaded", function () {
         // Hide the hint after the animation is complete
         setTimeout(() => {
           unlockHint.classList.remove("show");
+          lockerBtn.classList.add("inactive");
+          controls.enabled = false;
         }, 500);
       }, 2000);
     }
   }
+
+  lockerBtn.addEventListener("click", function () {
+    if (this.classList.contains("inactive")) {
+      this.classList.remove("inactive");
+      this.classList.add("active");
+      controls.enabled = true;
+    } else {
+      this.classList.remove("active");
+      this.classList.add("inactive");
+      controls.enabled = false;
+    }
+  });
 
   function startSmoothReturn() {
     // Store current positions as starting points for interpolation

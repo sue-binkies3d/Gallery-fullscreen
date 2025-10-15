@@ -886,3 +886,12 @@ button:focus,
 .pulsate {
   animation: pulsate 1.5s ease-in-out infinite;
 }
+
+.control-btn#locker-btn.inactive {
+  color: #cccccc; /* A lighter color for the inactive state */
+  cursor: pointer;
+}
+
+.control-btn#locker-btn.active {
+  color: #4285f4; /* A color to indicate the active state */
+}
