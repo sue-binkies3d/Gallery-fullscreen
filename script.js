@@ -1,18 +1,43 @@
 // Fullscreen functionality
 document.addEventListener("DOMContentLoaded", function () {
+  // Check if it's a desktop device
+  const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+
+  // Get the hint icons
+  const interactionHintIcon = document.querySelector(
+    "#interaction-hint .hint-icon img"
+  );
+  const zoomHintIcon = document.querySelector("#zoom-hint .hint-icon img");
+
+  // Update icons and text for desktop
+  if (isDesktop) {
+    if (interactionHintIcon) {
+      interactionHintIcon.src = "./assets/Mouse drag.svg";
+    }
+    if (zoomHintIcon) {
+      zoomHintIcon.src = "./assets/Mouse zoom.svg";
+    }
+    const zoomHintText = document.querySelector("#zoom-hint .hint-text");
+    if (zoomHintText) {
+      zoomHintText.textContent = "Scroll to zoom";
+    }
+  }
+
   // 3D Model Viewer
   let scene, camera, renderer, model, controls;
   const modelContainer = document.getElementById("model-container");
   const modelLoader = document.getElementById("model-loader");
   const interactionHint = document.getElementById("interaction-hint");
   const zoomHint = document.getElementById("zoom-hint");
-  const fallbackImage = document.getElementById("main-image");
+  const unlockHint = document.getElementById("unlock-hint");
+  const lockerBtn = document.getElementById("locker-btn");
   const prevBtn = document.getElementById("prev-btn");
   const nextBtn = document.getElementById("next-btn");
   const zoomInBtn = document.querySelector(".fa-search-plus").parentElement;
   const zoomOutBtn = document.querySelector(".fa-search-minus").parentElement;
   const chevronUpBtn = document.querySelector(".fa-chevron-up").parentElement;
-  const chevronDownBtn = document.querySelector(".fa-chevron-down").parentElement;
+  const chevronDownBtn =
+    document.querySelector(".fa-chevron-down").parentElement;
 
   // Animation state
   let isDemoMode = false;
@@ -35,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const containerWidth = modelContainer.clientWidth;
     const containerHeight = modelContainer.clientHeight;
     camera = new THREE.PerspectiveCamera(
-      50,
+      35,
       containerWidth / containerHeight,
       0.1,
       1000
@@ -125,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Scale and position the iPhone model appropriately
         model.scale.set(15, 15, 15); // Much larger scale for better visibility
-        model.position.set(0, -0.1, 0);
+        model.position.set(0, 0.4, 0);
 
         // Add the model to the scene
         scene.add(model);
@@ -410,7 +435,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (model) {
       initialRotation = model.rotation.y;
     }
-
     // Step 1: Model appears and stays still for 1 second
     setTimeout(() => {
       // Step 2: Show drag hint and start rotation
@@ -475,6 +499,40 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 2000);
       }, 2000);
     }, 1000);
+  }
+
+  function showUnlockHintAnimation() {
+    if (unlockHint && lockerBtn) {
+      // Show the unlock hint
+      unlockHint.classList.add("show");
+
+      // Get the icon from the button
+      const lockerIcon = lockerBtn.querySelector(".locker");
+
+      // Animate the icon to the center of the hint
+      const hintRect = unlockHint.getBoundingClientRect();
+      const iconRect = lockerIcon.getBoundingClientRect();
+
+      const offsetX =
+        hintRect.left - iconRect.left + (hintRect.width - iconRect.width) / 2;
+      const offsetY =
+        hintRect.top - iconRect.top + (hintRect.height - iconRect.height) / 2;
+
+      lockerIcon.style.transition = "transform 0.5s ease-in-out";
+      lockerIcon.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.5)`;
+      lockerIcon.classList.add("pulsate");
+
+      // After a few seconds, return the icon to its original position
+      setTimeout(() => {
+        lockerIcon.style.transform = "translate(0, 0) scale(1)";
+        lockerIcon.classList.remove("pulsate");
+
+        // Hide the hint after the animation is complete
+        setTimeout(() => {
+          unlockHint.classList.remove("show");
+        }, 500);
+      }, 2000);
+    }
   }
 
   function startSmoothReturn() {
@@ -554,6 +612,9 @@ document.addEventListener("DOMContentLoaded", function () {
         if (camera) {
           camera.position.z = initialCameraZ;
         }
+
+        // Show the unlock hint animation
+        showUnlockHintAnimation();
       }
     }
 

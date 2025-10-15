@@ -125,7 +125,6 @@ body {
   position: relative;
   background-color: #f8f8f8;
   border-radius: 12px;
-  padding: 2rem;
   aspect-ratio: 1;
 }
 
@@ -182,18 +181,18 @@ body {
 /* Interaction Hint */
 .interaction-hint {
   position: absolute;
-  top: 80%;
+  top: 82%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: black;
-  padding: 1rem 1.5rem;
+  padding: 8px;
   border-radius: 12px;
   display: none;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
+  background-color: white;
   z-index: 20;
-  backdrop-filter: blur(10px);
 }
 
 .interaction-hint.show {
@@ -768,10 +767,6 @@ button:focus,
   .product-layout {
     gap: 3rem;
   }
-
-  .main-image-container {
-    padding: 1.5rem;
-  }
 }
 
 @media (max-width: 768px) {
@@ -885,5 +880,9 @@ button:focus,
 }
 
 .highlight-icon {
+  animation: pulsate 1.5s ease-in-out infinite;
+}
+
+.pulsate {
   animation: pulsate 1.5s ease-in-out infinite;
 }
