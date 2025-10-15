@@ -754,7 +754,7 @@ img.loaded {
 }
 
 /* Focus states for accessibility */
-button:focus,
+
 .thumbnail:focus,
 .color-option:focus,
 .size-option:focus {
