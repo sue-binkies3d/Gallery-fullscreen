@@ -33,6 +33,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const lockerBtn = document.getElementById("locker-btn");
   const prevBtn = document.getElementById("prev-btn");
   const nextBtn = document.getElementById("next-btn");
+  const upBtn = document.getElementById("up-btn");
+  const downBtn = document.getElementById("down-btn");
   const zoomInBtn = document.querySelector(".fa-search-plus").parentElement;
   const zoomOutBtn = document.querySelector(".fa-search-minus").parentElement;
   const chevronUpBtn = document.querySelector(".fa-chevron-up").parentElement;
@@ -50,6 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let returnProgress = 0;
   let returnStartRotation = 0;
   let returnStartCameraZ = 0;
+  let initialTarget = new THREE.Vector3();
   let isZoomingOut = false;
   let zoomOutProgress = 0;
   let zoomOutStartRotation = 0;
@@ -91,11 +94,12 @@ document.addEventListener("DOMContentLoaded", function () {
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.enableZoom = true;
-    controls.enablePan = false;
+    controls.enablePan = true;
     controls.minDistance = 3;
     controls.maxDistance = 10;
     controls.minPolarAngle = Math.PI / 6;
     controls.maxPolarAngle = Math.PI - Math.PI / 6;
+    controls.target.clone(initialTarget);
 
     // Stop demo when user starts interacting
     controls.addEventListener("start", function () {
@@ -177,13 +181,48 @@ document.addEventListener("DOMContentLoaded", function () {
 
         controlBtns.forEach((btn) => {
           btn.addEventListener("click", function () {
+            const panSpeed = 0.1;
             // Handle specific control actions
             if (this === prevBtn && model) {
-              // Rotate model left
-              model.rotation.y -= Math.PI / 4;
+              if (camera.position.z < initialCameraZ) {
+                const xAxis = new THREE.Vector3();
+                const yAxis = new THREE.Vector3();
+                const zAxis = new THREE.Vector3();
+                camera.matrix.extractBasis(xAxis, yAxis, zAxis);
+                controls.target.add(xAxis.multiplyScalar(-panSpeed));
+              } else {
+                model.rotation.y -= Math.PI / 4;
+              }
             } else if (this === nextBtn && model) {
-              // Rotate model right
-              model.rotation.y += Math.PI / 4;
+              if (camera.position.z < initialCameraZ) {
+                const xAxis = new THREE.Vector3();
+                const yAxis = new THREE.Vector3();
+                const zAxis = new THREE.Vector3();
+                camera.matrix.extractBasis(xAxis, yAxis, zAxis);
+                controls.target.add(xAxis.multiplyScalar(panSpeed));
+              } else {
+                model.rotation.y += Math.PI / 4;
+              }
+            } else if (this === upBtn && model) {
+              if (camera.position.z < initialCameraZ) {
+                const xAxis = new THREE.Vector3();
+                const yAxis = new THREE.Vector3();
+                const zAxis = new THREE.Vector3();
+                camera.matrix.extractBasis(xAxis, yAxis, zAxis);
+                controls.target.add(yAxis.multiplyScalar(panSpeed));
+              } else {
+                model.rotation.x += Math.PI / 4;
+              }
+            } else if (this === downBtn && model) {
+              if (camera.position.z < initialCameraZ) {
+                const xAxis = new THREE.Vector3();
+                const yAxis = new THREE.Vector3();
+                const zAxis = new THREE.Vector3();
+                camera.matrix.extractBasis(xAxis, yAxis, zAxis);
+                controls.target.add(yAxis.multiplyScalar(-panSpeed));
+              } else {
+                model.rotation.x -= Math.PI / 4;
+              }
             } else if (this.querySelector(".fa-search-plus") && model) {
               // Zoom in
               if (camera) {
@@ -462,13 +501,48 @@ document.addEventListener("DOMContentLoaded", function () {
 
     controlBtns.forEach((btn) => {
       btn.addEventListener("click", function () {
+        const panSpeed = 0.1;
         // Handle specific control actions
         if (this === prevBtn && model) {
-          // Rotate model left
-          model.rotation.y -= Math.PI / 4;
+          if (camera.position.z < initialCameraZ) {
+            const xAxis = new THREE.Vector3();
+            const yAxis = new THREE.Vector3();
+            const zAxis = new THREE.Vector3();
+            camera.matrix.extractBasis(xAxis, yAxis, zAxis);
+            controls.target.add(xAxis.multiplyScalar(-panSpeed));
+          } else {
+            model.rotation.y -= Math.PI / 4;
+          }
         } else if (this === nextBtn && model) {
-          // Rotate model right
-          model.rotation.y += Math.PI / 4;
+          if (camera.position.z < initialCameraZ) {
+            const xAxis = new THREE.Vector3();
+            const yAxis = new THREE.Vector3();
+            const zAxis = new THREE.Vector3();
+            camera.matrix.extractBasis(xAxis, yAxis, zAxis);
+            controls.target.add(xAxis.multiplyScalar(panSpeed));
+          } else {
+            model.rotation.y += Math.PI / 4;
+          }
+        } else if (this === upBtn && model) {
+          if (camera.position.z < initialCameraZ) {
+            const xAxis = new THREE.Vector3();
+            const yAxis = new THREE.Vector3();
+            const zAxis = new THREE.Vector3();
+            camera.matrix.extractBasis(xAxis, yAxis, zAxis);
+            controls.target.add(yAxis.multiplyScalar(panSpeed));
+          } else {
+            model.rotation.x += Math.PI / 4;
+          }
+        } else if (this === downBtn && model) {
+          if (camera.position.z < initialCameraZ) {
+            const xAxis = new THREE.Vector3();
+            const yAxis = new THREE.Vector3();
+            const zAxis = new THREE.Vector3();
+            camera.matrix.extractBasis(xAxis, yAxis, zAxis);
+            controls.target.add(yAxis.multiplyScalar(-panSpeed));
+          } else {
+            model.rotation.x -= Math.PI / 4;
+          }
         } else if (this.querySelector(".fa-search-plus") && model) {
           // Zoom in
           if (camera) {
@@ -627,6 +701,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // Start smooth zoom out animation
     isZoomingOut = true;
     zoomOutProgress = 0;
+
+    // Reset pan
+    controls.target.copy(initialTarget);
   }
 
   function animate() {
