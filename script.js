@@ -4,32 +4,32 @@ document.addEventListener("DOMContentLoaded", function () {
   const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
 
   // Get the hint icons
-  const interactionHintIcon = document.querySelector(
-    "#interaction-hint .hint-icon img"
-  );
-  const zoomHintIcon = document.querySelector("#zoom-hint .hint-icon img");
+  // const interactionHintIcon = document.querySelector(
+  //   "#interaction-hint .hint-icon img"
+  // );
+  // const zoomHintIcon = document.querySelector("#zoom-hint .hint-icon img");
 
-  // Update icons and text for desktop
-  if (isDesktop) {
-    if (interactionHintIcon) {
-      interactionHintIcon.src = "./assets/Mouse drag.svg";
-    }
-    if (zoomHintIcon) {
-      zoomHintIcon.src = "./assets/Mouse zoom.svg";
-    }
-    const zoomHintText = document.querySelector("#zoom-hint .hint-text");
-    if (zoomHintText) {
-      zoomHintText.textContent = "Scroll to zoom";
-    }
-  }
+  // // Update icons and text for desktop
+  // if (isDesktop) {
+  //   if (interactionHintIcon) {
+  //     interactionHintIcon.src = "./assets/Mouse drag.svg";
+  //   }
+  //   if (zoomHintIcon) {
+  //     zoomHintIcon.src = "./assets/Mouse zoom.svg";
+  //   }
+  //   const zoomHintText = document.querySelector("#zoom-hint .hint-text");
+  //   if (zoomHintText) {
+  //     zoomHintText.textContent = "Scroll to zoom";
+  //   }
+  // }
 
   // 3D Model Viewer
   let scene, camera, renderer, model, controls;
   const modelContainer = document.getElementById("model-container");
   const modelLoader = document.getElementById("model-loader");
-  const interactionHint = document.getElementById("interaction-hint");
-  const zoomHint = document.getElementById("zoom-hint");
-  const unlockHint = document.getElementById("unlock-hint");
+  // const interactionHint = document.getElementById("interaction-hint");
+  // const zoomHint = document.getElementById("zoom-hint");
+  // const unlockHint = document.getElementById("unlock-hint");
   const lockerBtn = document.getElementById("locker-btn");
   const prevBtn = document.getElementById("prev-btn");
   const nextBtn = document.getElementById("next-btn");
@@ -50,6 +50,10 @@ document.addEventListener("DOMContentLoaded", function () {
   let returnProgress = 0;
   let returnStartRotation = 0;
   let returnStartCameraZ = 0;
+  let isZoomingOut = false;
+  let zoomOutProgress = 0;
+  let zoomOutStartRotation = 0;
+  let zoomOutStartCameraZ = 0;
 
   function init3DViewer() {
     // Scene setup
@@ -150,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Scale and position the iPhone model appropriately
         model.scale.set(15, 15, 15); // Much larger scale for better visibility
-        model.position.set(0, 0.4, 0);
+        model.position.set(0, 0, 0);
 
         // Add the model to the scene
         scene.add(model);
@@ -163,10 +167,34 @@ document.addEventListener("DOMContentLoaded", function () {
         initialCameraZ = camera.position.z;
 
         // Start demo animation sequence
-        startDemoAnimationSequence();
+        // startDemoAnimationSequence();
 
         // Start animation loop
         animate();
+
+        // Image control buttons
+        const controlBtns = document.querySelectorAll(".control-btn");
+
+        controlBtns.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            // Handle specific control actions
+            if (this === prevBtn && model) {
+              // Rotate model left
+              model.rotation.y -= Math.PI / 4;
+            } else if (this === nextBtn && model) {
+              // Rotate model right
+              model.rotation.y += Math.PI / 4;
+            } else if (this.querySelector(".fa-search-plus") && model) {
+              // Zoom in
+              if (camera) {
+                camera.position.z *= 0.9;
+              }
+            } else if (this.querySelector(".fa-search-minus") && model) {
+              // Zoom out
+              smoothZoomOut();
+            }
+          });
+        });
       },
       function (progress) {
         // Loading progress
@@ -424,130 +452,154 @@ document.addEventListener("DOMContentLoaded", function () {
     initialCameraZ = camera.position.z;
 
     // Start demo animation sequence
-    startDemoAnimationSequence();
+    // startDemoAnimationSequence();
 
     // Start animation loop
     animate();
+
+    // Image control buttons
+    const controlBtns = document.querySelectorAll(".control-btn");
+
+    controlBtns.forEach((btn) => {
+      btn.addEventListener("click", function () {
+        // Handle specific control actions
+        if (this === prevBtn && model) {
+          // Rotate model left
+          model.rotation.y -= Math.PI / 4;
+        } else if (this === nextBtn && model) {
+          // Rotate model right
+          model.rotation.y += Math.PI / 4;
+        } else if (this.querySelector(".fa-search-plus") && model) {
+          // Zoom in
+          if (camera) {
+            camera.position.z *= 0.9;
+          }
+        } else if (this.querySelector(".fa-search-minus") && model) {
+          // Zoom out
+          smoothZoomOut();
+        }
+      });
+    });
   }
 
-  function startDemoAnimationSequence() {
-    // Store initial rotation
-    if (model) {
-      initialRotation = model.rotation.y;
-    }
-    // Step 1: Model appears and stays still for 1 second
-    setTimeout(() => {
-      // Step 2: Show drag hint and start rotation
-      if (interactionHint) {
-        interactionHint.classList.add("show");
-        // Highlight chevron icons
-        if (prevBtn && nextBtn && chevronUpBtn && chevronDownBtn) {
-          prevBtn.classList.add("highlight-icon");
-          nextBtn.classList.add("highlight-icon");
-          chevronUpBtn.classList.add("highlight-icon");
-          chevronDownBtn.classList.add("highlight-icon");
-        }
-      }
+  // function startDemoAnimationSequence() {
+  //   // Store initial rotation
+  //   if (model) {
+  //     initialRotation = model.rotation.y;
+  //   }
+  //   // Step 1: Model appears and stays still for 1 second
+  //   setTimeout(() => {
+  //     // Step 2: Show drag hint and start rotation
+  //     if (interactionHint) {
+  //       interactionHint.classList.add("show");
+  //       // Highlight chevron icons
+  //       if (prevBtn && nextBtn && chevronUpBtn && chevronDownBtn) {
+  //         prevBtn.classList.add("highlight-icon");
+  //         nextBtn.classList.add("highlight-icon");
+  //         chevronUpBtn.classList.add("highlight-icon");
+  //         chevronDownBtn.classList.add("highlight-icon");
+  //       }
+  //     }
 
-      isDemoMode = true;
-      demoRotation = 0;
+  //     isDemoMode = true;
+  //     demoRotation = 0;
 
-      // Step 3: After 2 seconds, hide drag hint and show zoom hint
-      setTimeout(() => {
-        if (interactionHint) {
-          interactionHint.classList.remove("show");
-          interactionHint.style.display = "none";
-          // Remove highlight from chevron icons
-          if (prevBtn && nextBtn && chevronUpBtn && chevronDownBtn) {
-            prevBtn.classList.remove("highlight-icon");
-            nextBtn.classList.remove("highlight-icon");
-            chevronUpBtn.classList.remove("highlight-icon");
-            chevronDownBtn.classList.remove("highlight-icon");
-          }
-        }
+  //     // Step 3: After 2 seconds, hide drag hint and show zoom hint
+  //     setTimeout(() => {
+  //       if (interactionHint) {
+  //         interactionHint.classList.remove("show");
+  //         interactionHint.style.display = "none";
+  //         // Remove highlight from chevron icons
+  //         if (prevBtn && nextBtn && chevronUpBtn && chevronDownBtn) {
+  //           prevBtn.classList.remove("highlight-icon");
+  //           nextBtn.classList.remove("highlight-icon");
+  //           chevronUpBtn.classList.remove("highlight-icon");
+  //           chevronDownBtn.classList.remove("highlight-icon");
+  //         }
+  //       }
 
-        // Show zoom hint and start zoom demo
-        if (zoomHint) {
-          zoomHint.classList.add("show");
-          // Highlight zoom icons
-          if (zoomInBtn && zoomOutBtn) {
-            zoomInBtn.classList.add("highlight-icon");
-            zoomOutBtn.classList.add("highlight-icon");
-          }
-        }
+  //       // Show zoom hint and start zoom demo
+  //       if (zoomHint) {
+  //         zoomHint.classList.add("show");
+  //         // Highlight zoom icons
+  //         if (zoomInBtn && zoomOutBtn) {
+  //           zoomInBtn.classList.add("highlight-icon");
+  //           zoomOutBtn.classList.add("highlight-icon");
+  //         }
+  //       }
 
-        isDemoMode = false;
-        isZoomDemo = true;
-        zoomDemo = 0;
+  //       isDemoMode = false;
+  //       isZoomDemo = true;
+  //       zoomDemo = 0;
 
-        // Step 4: After 2 seconds, hide zoom hint and smoothly return to initial position
-        setTimeout(() => {
-          if (zoomHint) {
-            zoomHint.classList.remove("show");
-            zoomHint.style.display = "none";
-            // Remove highlight from zoom icons
-            if (zoomInBtn && zoomOutBtn) {
-              zoomInBtn.classList.remove("highlight-icon");
-              zoomOutBtn.classList.remove("highlight-icon");
-            }
-          }
+  //       // Step 4: After 2 seconds, hide zoom hint and smoothly return to initial position
+  //       setTimeout(() => {
+  //         if (zoomHint) {
+  //           zoomHint.classList.remove("show");
+  //           zoomHint.style.display = "none";
+  //           // Remove highlight from zoom icons
+  //           if (zoomInBtn && zoomOutBtn) {
+  //             zoomInBtn.classList.remove("highlight-icon");
+  //             zoomOutBtn.classList.remove("highlight-icon");
+  //           }
+  //         }
 
-          isZoomDemo = false;
+  //         isZoomDemo = false;
 
-          // Start smooth return to initial position
-          startSmoothReturn();
-        }, 2000);
-      }, 2000);
-    }, 1000);
-  }
+  //         // Start smooth return to initial position
+  //         startSmoothReturn();
+  //       }, 2000);
+  //     }, 2000);
+  //   }, 1000);
+  // }
 
-  function showUnlockHintAnimation() {
-    if (unlockHint && lockerBtn) {
-      // Show the unlock hint
-      unlockHint.classList.add("show");
+  // function showUnlockHintAnimation() {
+  //   if (unlockHint && lockerBtn) {
+  //     // Show the unlock hint
+  //     unlockHint.classList.add("show");
 
-      // Get the icon from the button
-      const lockerIcon = lockerBtn.querySelector(".locker");
+  //     // Get the icon from the button
+  //     const lockerIcon = lockerBtn.querySelector(".locker");
 
-      // Animate the icon to the center of the hint
-      const hintRect = unlockHint.getBoundingClientRect();
-      const iconRect = lockerIcon.getBoundingClientRect();
+  //     // Animate the icon to the center of the hint
+  //     const hintRect = unlockHint.getBoundingClientRect();
+  //     const iconRect = lockerIcon.getBoundingClientRect();
 
-      const offsetX =
-        hintRect.left - iconRect.left + (hintRect.width - iconRect.width) / 2;
-      const offsetY =
-        hintRect.top - iconRect.top + (hintRect.height - iconRect.height) / 2;
+  //     const offsetX =
+  //       hintRect.left - iconRect.left + (hintRect.width - iconRect.width) / 2;
+  //     const offsetY =
+  //       hintRect.top - iconRect.top + (hintRect.height - iconRect.height) / 2;
 
-      lockerIcon.style.transition = "transform 0.5s ease-in-out";
-      lockerIcon.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.5)`;
-      lockerIcon.classList.add("pulsate");
+  //     lockerIcon.style.transition = "transform 0.5s ease-in-out";
+  //     lockerIcon.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.5)`;
+  //     lockerIcon.classList.add("pulsate");
 
-      // After a few seconds, return the icon to its original position
-      setTimeout(() => {
-        lockerIcon.style.transform = "translate(0, 0) scale(1)";
-        lockerIcon.classList.remove("pulsate");
+  //     // After a few seconds, return the icon to its original position
+  //     setTimeout(() => {
+  //       lockerIcon.style.transform = "translate(0, 0) scale(1)";
+  //       lockerIcon.classList.remove("pulsate");
 
-        // Hide the hint after the animation is complete
-        setTimeout(() => {
-          unlockHint.classList.remove("show");
-          lockerBtn.classList.add("inactive");
-          controls.enabled = false;
-        }, 500);
-      }, 2000);
-    }
-  }
+  //       // Hide the hint after the animation is complete
+  //       setTimeout(() => {
+  //         unlockHint.classList.remove("show");
+  //         lockerBtn.classList.add("inactive");
+  //         controls.enabled = false;
+  //       }, 500);
+  //     }, 2000);
+  //   }
+  // }
 
-  lockerBtn.addEventListener("click", function () {
-    if (this.classList.contains("inactive")) {
-      this.classList.remove("inactive");
-      this.classList.add("active");
-      controls.enabled = true;
-    } else {
-      this.classList.remove("active");
-      this.classList.add("inactive");
-      controls.enabled = false;
-    }
-  });
+  // lockerBtn.addEventListener("click", function () {
+  //   if (this.classList.contains("inactive")) {
+  //     this.classList.remove("inactive");
+  //     this.classList.add("active");
+  //     controls.enabled = true;
+  //   } else {
+  //     this.classList.remove("active");
+  //     this.classList.add("inactive");
+  //     controls.enabled = false;
+  //   }
+  // });
 
   function startSmoothReturn() {
     // Store current positions as starting points for interpolation
@@ -561,6 +613,20 @@ document.addEventListener("DOMContentLoaded", function () {
     // Start smooth return animation
     isReturningToInitial = true;
     returnProgress = 0;
+  }
+
+  function smoothZoomOut() {
+    // Store current positions as starting points for interpolation
+    if (model) {
+      zoomOutStartRotation = model.rotation.y;
+    }
+    if (camera) {
+      zoomOutStartCameraZ = camera.position.z;
+    }
+
+    // Start smooth zoom out animation
+    isZoomingOut = true;
+    zoomOutProgress = 0;
   }
 
   function animate() {
@@ -628,7 +694,42 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Show the unlock hint animation
-        showUnlockHintAnimation();
+        // showUnlockHintAnimation();
+      }
+    }
+
+    // Smooth zoom out
+    if (isZoomingOut) {
+      zoomOutProgress += 0.02; // Animation speed
+
+      if (zoomOutProgress <= 1) {
+        // Use ease-out interpolation for smooth transition
+        const easeOut = 1 - Math.pow(1 - zoomOutProgress, 3);
+
+        // Interpolate rotation
+        if (model) {
+          model.rotation.y =
+            zoomOutStartRotation +
+            (initialRotation - zoomOutStartRotation) * easeOut;
+        }
+
+        // Interpolate camera position
+        if (camera) {
+          camera.position.z =
+            zoomOutStartCameraZ +
+            (initialCameraZ - zoomOutStartCameraZ) * easeOut;
+        }
+      } else {
+        // Animation complete
+        isZoomingOut = false;
+
+        // Ensure exact final positions
+        if (model) {
+          model.rotation.y = initialRotation;
+        }
+        if (camera) {
+          camera.position.z = initialCameraZ;
+        }
       }
     }
 
@@ -919,39 +1020,7 @@ zoomBtn.addEventListener("click", function () {
   }
 });
 
-// Image control buttons
-const controlBtns = document.querySelectorAll(".control-btn");
-const prevBtn = document.getElementById("prev-btn");
-const nextBtn = document.getElementById("next-btn");
 
-controlBtns.forEach((btn) => {
-  btn.addEventListener("click", function () {
-    // Add visual feedback
-    this.style.transform = "scale(0.95)";
-    setTimeout(() => {
-      this.style.transform = "scale(1)";
-    }, 150);
-
-    // Handle specific control actions
-    if (this === prevBtn && model) {
-      // Rotate model left
-      model.rotation.y -= Math.PI / 4;
-    } else if (this === nextBtn && model) {
-      // Rotate model right
-      model.rotation.y += Math.PI / 4;
-    } else if (this.querySelector(".fa-search-plus") && model) {
-      // Zoom in
-      if (camera) {
-        camera.position.z = Math.max(2, camera.position.z - 0.5);
-      }
-    } else if (this.querySelector(".fa-search-minus") && model) {
-      // Zoom out
-      if (camera) {
-        camera.position.z = Math.min(8, camera.position.z + 0.5);
-      }
-    }
-  });
-});
 
 // Header icon interactions
 const iconBtns = document.querySelectorAll(".icon-btn");
