@@ -61,6 +61,10 @@ document.addEventListener("DOMContentLoaded", function () {
   let panTarget = new THREE.Vector3();
   let panProgress = 0;
   let panStart = new THREE.Vector3();
+  let isRotating = false;
+  let rotationTargetEuler = new THREE.Euler();
+  let rotationProgress = 0;
+  let rotationStartEuler = new THREE.Euler();
 
   function init3DViewer() {
     // Scene setup
@@ -85,13 +89,17 @@ document.addEventListener("DOMContentLoaded", function () {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     modelContainer.appendChild(renderer.domElement);
 
-    // Simple lighting setup
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.8);
+    // Brighter lighting setup
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
     scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(5, 5, 5);
     scene.add(directionalLight);
+
+    const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
+    directionalLight2.position.set(-5, 5, -5);
+    scene.add(directionalLight2);
 
     // Controls
     controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -99,7 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
     controls.dampingFactor = 0.05;
     controls.enableZoom = true;
     controls.enablePan = true;
-    controls.minDistance = 3;
+    controls.minDistance = 1.5;
     controls.maxDistance = 10;
     controls.minPolarAngle = Math.PI / 6;
     controls.maxPolarAngle = Math.PI - Math.PI / 6;
@@ -109,35 +117,19 @@ document.addEventListener("DOMContentLoaded", function () {
       switch (event.key) {
         case "ArrowLeft":
           event.preventDefault();
-          if (camera.position.z < initialCameraZ - 0.1) {
-            panLeft();
-          } else {
-            rotateLeft();
-          }
+          rotateLeft();
           break;
         case "ArrowRight":
           event.preventDefault();
-          if (camera.position.z < initialCameraZ - 0.1) {
-            panRight();
-          } else {
-            rotateRight();
-          }
+          rotateRight();
           break;
         case "ArrowUp":
           event.preventDefault();
-          if (camera.position.z < initialCameraZ - 0.1) {
-            panUp();
-          } else {
-            rotateUp();
-          }
+          rotateUp();
           break;
         case "ArrowDown":
           event.preventDefault();
-          if (camera.position.z < initialCameraZ - 0.1) {
-            panDown();
-          } else {
-            rotateDown();
-          }
+          rotateDown();
           break;
       }
     });
@@ -225,29 +217,13 @@ document.addEventListener("DOMContentLoaded", function () {
           btn.addEventListener("click", function () {
             // Handle specific control actions
             if (this === prevBtn && model) {
-              if (camera.position.z < initialCameraZ - 0.1) {
-                panLeft();
-              } else {
-                rotateLeft();
-              }
+              rotateLeft();
             } else if (this === nextBtn && model) {
-              if (camera.position.z < initialCameraZ - 0.1) {
-                panRight();
-              } else {
-                rotateRight();
-              }
+              rotateRight();
             } else if (this === upBtn && model) {
-              if (camera.position.z < initialCameraZ - 0.1) {
-                panUp();
-              } else {
-                rotateUp();
-              }
+              rotateUp();
             } else if (this === downBtn && model) {
-              if (camera.position.z < initialCameraZ - 0.1) {
-                panDown();
-              } else {
-                rotateDown();
-              }
+              rotateDown();
             } else if (this.querySelector(".fa-search-plus") && model) {
               // Zoom in
               if (camera) {
@@ -258,6 +234,14 @@ document.addEventListener("DOMContentLoaded", function () {
               smoothZoomOut();
             }
           });
+        });
+
+        chevronUpBtn.addEventListener("click", () => {
+          if (model) rotateUp();
+        });
+
+        chevronDownBtn.addEventListener("click", () => {
+          if (model) rotateDown();
         });
       },
       function (progress) {
@@ -529,29 +513,13 @@ document.addEventListener("DOMContentLoaded", function () {
       btn.addEventListener("click", function () {
         // Handle specific control actions
         if (this === prevBtn && model) {
-          if (camera.position.z < initialCameraZ - 0.1) {
-            panLeft();
-          } else {
-            rotateLeft();
-          }
+          rotateLeft();
         } else if (this === nextBtn && model) {
-          if (camera.position.z < initialCameraZ - 0.1) {
-            panRight();
-          } else {
-            rotateRight();
-          }
+          rotateRight();
         } else if (this === upBtn && model) {
-          if (camera.position.z < initialCameraZ - 0.1) {
-            panUp();
-          } else {
-            rotateUp();
-          }
+          rotateUp();
         } else if (this === downBtn && model) {
-          if (camera.position.z < initialCameraZ - 0.1) {
-            panDown();
-          } else {
-            rotateDown();
-          }
+          rotateDown();
         } else if (this.querySelector(".fa-search-plus") && model) {
           // Zoom in
           if (camera) {
@@ -562,6 +530,14 @@ document.addEventListener("DOMContentLoaded", function () {
           smoothZoomOut();
         }
       });
+    });
+
+    chevronUpBtn.addEventListener("click", () => {
+      if (model) rotateUp();
+    });
+
+    chevronDownBtn.addEventListener("click", () => {
+      if (model) rotateDown();
     });
   }
 
@@ -752,16 +728,35 @@ document.addEventListener("DOMContentLoaded", function () {
     smoothPan(direction);
   }
   function rotateLeft() {
-    model.rotation.y -= Math.PI / 4;
+    if (isRotating) return;
+    const target = new THREE.Euler().copy(model.rotation);
+    target.y -= Math.PI / 4;
+    setupSmoothRotation(target);
   }
   function rotateRight() {
-    model.rotation.y += Math.PI / 4;
+    if (isRotating) return;
+    const target = new THREE.Euler().copy(model.rotation);
+    target.y += Math.PI / 4;
+    setupSmoothRotation(target);
   }
   function rotateUp() {
-    model.rotation.x += Math.PI / 4;
+    if (isRotating) return;
+    const target = new THREE.Euler().copy(model.rotation);
+    target.x += Math.PI / 4;
+    setupSmoothRotation(target);
   }
   function rotateDown() {
-    model.rotation.x -= Math.PI / 4;
+    if (isRotating) return;
+    const target = new THREE.Euler().copy(model.rotation);
+    target.x -= Math.PI / 4;
+    setupSmoothRotation(target);
+  }
+
+  function setupSmoothRotation(target) {
+    isRotating = true;
+    rotationProgress = 0;
+    rotationStartEuler.copy(model.rotation);
+    rotationTargetEuler.copy(target);
   }
 
   function smoothPan(direction) {
@@ -830,7 +825,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Ensure exact final positions
         if (model) {
-          model.rotation.y = initialRotation;
+          model.rotation.copy(initialRotation);
         }
         if (camera) {
           camera.position.z = initialCameraZ;
@@ -889,6 +884,26 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         isPanning = false;
         controls.target.copy(panTarget);
+      }
+    }
+
+    // Smooth rotation
+    if (isRotating) {
+      rotationProgress += 0.05; // Animation speed
+      if (rotationProgress <= 1) {
+        const easeOut = 1 - Math.pow(1 - rotationProgress, 3);
+        const newEuler = new THREE.Euler(
+          rotationStartEuler.x +
+            (rotationTargetEuler.x - rotationStartEuler.x) * easeOut,
+          rotationStartEuler.y +
+            (rotationTargetEuler.y - rotationStartEuler.y) * easeOut,
+          rotationStartEuler.z +
+            (rotationTargetEuler.z - rotationStartEuler.z) * easeOut
+        );
+        model.rotation.copy(newEuler);
+      } else {
+        isRotating = false;
+        model.rotation.copy(rotationTargetEuler);
       }
     }
 
